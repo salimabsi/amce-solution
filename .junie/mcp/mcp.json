@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Users/salimabsi/Library/Application Support/Herd/bin/php85",
+            "args": [
+                "/Users/salimabsi/Projects/laravel/amce-solution/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}

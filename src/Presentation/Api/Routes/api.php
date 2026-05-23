@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Presentation\Api\Controllers\DriverController;
+use Presentation\Api\Controllers\OrderController;
 
-// Routes registered here in Phase 3
-Route::get('/ping', fn () => response()->json(['status' => 'ok']));
+Route::post('/orders/{id}/assign', [OrderController::class, 'assign']);
+Route::get('/drivers/{id}/orders', [DriverController::class, 'orders']);

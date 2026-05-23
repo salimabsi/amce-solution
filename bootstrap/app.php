@@ -1,6 +1,10 @@
 <?php
 
+use Domain\Driver\Exceptions\DriverNotFoundException;
 use Domain\Driver\Providers\DriverServiceProvider;
+use Domain\Order\Exceptions\NoAvailableDriverException;
+use Domain\Order\Exceptions\OrderAlreadyAssignedException;
+use Domain\Order\Exceptions\OrderNotFoundException;
 use Domain\Order\Providers\OrderServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,5 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(fn (OrderNotFoundException $e) => response()->json(['message' => $e->getMessage()], 404));
+        $exceptions->render(fn (DriverNotFoundException $e) => response()->json(['message' => $e->getMessage()], 404));
+        $exceptions->render(fn (OrderAlreadyAssignedException $e) => response()->json(['message' => $e->getMessage()], 409));
+        $exceptions->render(fn (NoAvailableDriverException $e) => response()->json(['message' => $e->getMessage()], 422));
     })->create();

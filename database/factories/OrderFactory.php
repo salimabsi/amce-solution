@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use Domain\Driver\Models\Entities\Driver;
+use Domain\Order\Enums\OrderPriority;
+use Domain\Order\Enums\OrderStatus;
+use Domain\Order\Enums\OrderType;
 use Domain\Order\Models\Entities\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,9 +20,9 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => 'pending',
-            'type' => fake()->randomElement(['standard', 'fragile', 'refrigerated', 'hazardous']),
-            'priority' => fake()->randomElement(['normal', 'vip']),
+            'status' => OrderStatus::Pending,
+            'type' => fake()->randomElement(OrderType::cases()),
+            'priority' => fake()->randomElement(OrderPriority::cases()),
             'weight_kg' => fake()->randomFloat(2, 1, 500),
             'pickup_lat' => fake()->latitude(24.0, 25.5),
             'pickup_lng' => fake()->longitude(46.0, 47.5),
@@ -32,13 +35,13 @@ class OrderFactory extends Factory
 
     public function pending(): static
     {
-        return $this->state(['status' => 'pending', 'driver_id' => null, 'assigned_at' => null]);
+        return $this->state(['status' => OrderStatus::Pending, 'driver_id' => null, 'assigned_at' => null]);
     }
 
     public function assigned(): static
     {
         return $this->state(fn () => [
-            'status' => 'assigned',
+            'status' => OrderStatus::Assigned,
             'driver_id' => Driver::factory(),
             'assigned_at' => now(),
         ]);
@@ -47,7 +50,7 @@ class OrderFactory extends Factory
     public function beingServed(): static
     {
         return $this->state(fn () => [
-            'status' => 'being_served',
+            'status' => OrderStatus::BeingServed,
             'driver_id' => Driver::factory(),
             'assigned_at' => now()->subMinutes(fake()->numberBetween(5, 60)),
         ]);
@@ -56,7 +59,7 @@ class OrderFactory extends Factory
     public function completed(): static
     {
         return $this->state(fn () => [
-            'status' => 'completed',
+            'status' => OrderStatus::Completed,
             'driver_id' => Driver::factory(),
             'assigned_at' => now()->subHours(fake()->numberBetween(1, 48)),
         ]);
@@ -64,11 +67,11 @@ class OrderFactory extends Factory
 
     public function cancelled(): static
     {
-        return $this->state(['status' => 'cancelled']);
+        return $this->state(['status' => OrderStatus::Cancelled]);
     }
 
     public function vip(): static
     {
-        return $this->state(['priority' => 'vip']);
+        return $this->state(['priority' => OrderPriority::Vip]);
     }
 }

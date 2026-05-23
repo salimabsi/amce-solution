@@ -3,6 +3,9 @@
 namespace Domain\Order\Models\Entities;
 
 use Domain\Driver\Models\Entities\Driver;
+use Domain\Order\Enums\OrderPriority;
+use Domain\Order\Enums\OrderStatus;
+use Domain\Order\Enums\OrderType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +30,9 @@ class Order extends Model
     protected function casts(): array
     {
         return [
+            'status' => OrderStatus::class,
+            'type' => OrderType::class,
+            'priority' => OrderPriority::class,
             'weight_kg' => 'decimal:2',
             'pickup_lat' => 'decimal:7',
             'pickup_lng' => 'decimal:7',

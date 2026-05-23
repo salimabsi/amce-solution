@@ -1,0 +1,42 @@
+This is ApacheBench, Version 2.3 <$Revision: 1923142 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking amce-solution.test (be patient).....done
+
+
+Server Software:        nginx/1.25.4
+Server Hostname:        amce-solution.test
+Server Port:            80
+
+Document Path:          /api/drivers/nearby-haversine?lat=24.7&lng=46.7&radius=5
+Document Length:        946 bytes
+
+Concurrency Level:      20
+Time taken for tests:   37.230 seconds
+Complete requests:      500
+Failed requests:        0
+Total transferred:      613500 bytes
+HTML transferred:       473000 bytes
+Requests per second:    13.43 [#/sec] (mean)
+Time per request:       1489.208 [ms] (mean)
+Time per request:       74.460 [ms] (mean, across all concurrent requests)
+Transfer rate:          16.09 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.1      0       1
+Processing:   347 1450 150.0   1467    1616
+Waiting:      346 1450 150.0   1467    1616
+Total:        347 1451 150.0   1467    1616
+
+Percentage of the requests served within a certain time (ms)
+  50%   1467
+  66%   1482
+  75%   1488
+  80%   1494
+  90%   1518
+  95%   1542
+  98%   1605
+  99%   1610
+ 100%   1616 (longest request)

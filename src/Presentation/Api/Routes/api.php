@@ -9,4 +9,6 @@ Route::get('/orders/pending-db', [OrderController::class, 'pendingDb']); // BENC
 Route::post('/orders', [OrderController::class, 'store']);
 Route::post('/orders/{id}/assign', [OrderController::class, 'assign']);
 Route::get('/drivers', [DriverController::class, 'index']);
+Route::get('/drivers/nearby', [DriverController::class, 'nearby']); // BENCHMARK-ONLY
+Route::get('/drivers/nearby-haversine', [DriverController::class, 'nearbyHaversine']); // BENCHMARK-ONLY
 Route::get('/drivers/{id}/orders', [DriverController::class, 'orders']);

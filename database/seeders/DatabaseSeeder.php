@@ -34,22 +34,22 @@ class DatabaseSeeder extends Seeder
             ->create();
 
         // Pending orders — visible on the operations team page
-        Order::factory(12)->pending()->create();
+        Order::factory(22)->pending()->create();
 
         // Orders assigned to available drivers
-        Order::factory(6)
+        Order::factory(16)
             ->assigned()
             ->recycle($availableDrivers)
             ->create();
 
         // Orders in service
-        Order::factory(5)
+        Order::factory(15)
             ->beingServed()
             ->recycle($availableDrivers)
             ->create();
 
         // Historical orders
-        Order::factory(10)->completed()->recycle($availableDrivers)->create();
-        Order::factory(3)->cancelled()->create();
+        Order::factory(20)->completed()->recycle($availableDrivers)->create();
+        Order::factory(13)->cancelled()->create();
     }
 }

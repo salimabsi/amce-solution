@@ -2,6 +2,7 @@
 
 namespace Domain\Driver\Models\Entities;
 
+use App\Models\User;
 use Domain\Order\Models\Entities\Order;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +15,7 @@ class Driver extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'phone',
+        'user_id',
         'is_available',
         'vehicle_id',
     ];
@@ -25,6 +25,11 @@ class Driver extends Model
         return [
             'is_available' => 'boolean',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function vehicle(): BelongsTo

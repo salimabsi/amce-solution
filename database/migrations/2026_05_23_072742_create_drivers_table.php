@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone')->unique();
+            $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
             $table->boolean('is_available')->default(true);
             $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

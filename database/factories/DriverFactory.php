@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Domain\Driver\Models\Entities\Driver;
 use Domain\Driver\Models\Entities\Vehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,8 +18,7 @@ class DriverFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'phone' => fake()->unique()->numerify('+9665########'),
+            'user_id' => User::factory(),
             'is_available' => true,
             'vehicle_id' => Vehicle::factory(),
         ];

@@ -2,6 +2,7 @@
 
 namespace Presentation\Api\Controllers;
 
+use Domain\Order\Actions\GetPendingOrdersFromDbAction;
 use Domain\Order\Contracts\OrderServiceContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -15,6 +16,12 @@ class OrderController
     public function pending(): AnonymousResourceCollection
     {
         return OrderResource::collection($this->orderService->getPendingOrders());
+    }
+
+    // BENCHMARK-ONLY: A/B against /api/orders/pending (Redis ZSET path). See benchmarks/SUMMARY.md.
+    public function pendingDb(): AnonymousResourceCollection
+    {
+        return OrderResource::collection((new GetPendingOrdersFromDbAction)->handle());
     }
 
     public function store(CreateOrderRequest $request): JsonResponse

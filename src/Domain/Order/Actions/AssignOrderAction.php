@@ -9,6 +9,7 @@ use Domain\Order\Exceptions\NoAvailableDriverException;
 use Domain\Order\Exceptions\OrderNotFoundException;
 use Domain\Order\Models\Entities\Order;
 use Domain\Shared\Actions\Action;
+use Illuminate\Support\Facades\DB;
 
 class AssignOrderAction extends Action
 {
@@ -39,10 +40,11 @@ class AssignOrderAction extends Action
             fn ($driver) => collect($this->scorers)->sum(fn ($scorer) => $scorer->score($driver, $order))
         )->first();
 
-        $order = (new MarkOrderAsAssignedAction($this->orderId, $bestDriver->id))->handle();
+        return DB::transaction(function () use ($bestDriver) {
+            $order = (new MarkOrderAsAssignedAction($this->orderId, $bestDriver->id))->handle();
+            $this->driverService->markUnavailable($bestDriver->id);
 
-        $this->driverService->markUnavailable($bestDriver->id);
-
-        return $order;
+            return $order;
+        });
     }
 }

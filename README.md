@@ -126,13 +126,9 @@ Several combination of factors contribute in the best FIT, those include but not
 
 ##### Running the Scoring algorithm:
 
-<img width="1727" height="2315" alt="winch" src="https://github.com/user-attachments/assets/f98e11d8-92a5-4cfa-b89f-471a27869a3a" />
-
-
 The objects that run through the scoring algorithm **must include all the specs required** (Mix of Driver/Vehicle/Order)
 
-![[winch.jpg]]
-
+<img width="1727" height="2315" alt="winch" src="https://github.com/user-attachments/assets/f98e11d8-92a5-4cfa-b89f-471a27869a3a" />
 
 Since this algorithm runs:
 1. Over a few **feasible** drivers with their vehicles "maybe tens"

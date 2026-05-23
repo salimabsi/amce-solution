@@ -3,7 +3,6 @@
 namespace Domain\Order\Services;
 
 use Domain\Driver\Contracts\DriverServiceContract;
-use Domain\Order\Actions\Assignment\Filters\GeoDistanceFilter;
 use Domain\Order\Actions\Assignment\Filters\VehicleCapacityFilter;
 use Domain\Order\Actions\Assignment\Filters\VehicleTypeFilter;
 use Domain\Order\Actions\Assignment\Scorers\DistanceScorer;
@@ -48,7 +47,6 @@ class OrderService implements OrderServiceContract
             orderId: $orderId,
             driverService: $this->driverService,
             filters: [
-                new GeoDistanceFilter,
                 new VehicleTypeFilter,
                 new VehicleCapacityFilter,
             ],

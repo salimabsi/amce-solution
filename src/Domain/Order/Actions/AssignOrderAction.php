@@ -20,13 +20,18 @@ class AssignOrderAction extends Action
         private readonly DriverServiceContract $driverService,
         private readonly array $filters,
         private readonly array $scorers,
+        private readonly float $radiusKm = 50,
     ) {}
 
     public function handle(): Order
     {
         $order = Order::find($this->orderId) ?? throw new OrderNotFoundException($this->orderId);
 
-        $drivers = $this->driverService->getAvailableDrivers();
+        $drivers = $this->driverService->getAvailableDriversNearby(
+            (float) $order->pickup_lat,
+            (float) $order->pickup_lng,
+            $this->radiusKm,
+        );
 
         foreach ($this->filters as $filter) {
             $drivers = $filter->filter($drivers, $order);

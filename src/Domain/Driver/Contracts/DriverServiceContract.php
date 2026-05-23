@@ -14,10 +14,10 @@ interface DriverServiceContract
     public function getDrivers(int $perPage = 15): LengthAwarePaginator;
 
     /**
-     * Returns all available drivers with vehicle and location eager loaded.
-     * Used by the Assignment domain during the filter/score phase.
+     * Returns available drivers within the given radius (km) of a point.
+     * Uses Redis GEO for the proximity lookup, then hydrates from DB.
      */
-    public function getAvailableDrivers(): Collection;
+    public function getAvailableDriversNearby(float $lat, float $lng, float $radiusKm): Collection;
 
     public function updateLocation(int $driverId, DriverLocationData $data): void;
 

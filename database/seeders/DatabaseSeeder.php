@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Domain\Driver\Contracts\DriverLocationStoreContract;
 use Domain\Driver\Models\Entities\Driver;
+use Domain\Driver\Models\Entities\DriverLocation;
 use Domain\Order\Models\Entities\Order;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -57,5 +59,12 @@ class DatabaseSeeder extends Seeder
         // Historical orders — can share drivers freely
         Order::factory(20)->completed()->recycle($availableDrivers)->create();
         Order::factory(13)->cancelled()->create();
+
+        // WithoutModelEvents disables observers during seeding, so mirror
+        // driver locations to Redis explicitly to keep the GEO set in sync.
+        $store = app(DriverLocationStoreContract::class);
+        DriverLocation::query()->each(
+            fn (DriverLocation $loc) => $store->set($loc->driver_id, (float) $loc->lat, (float) $loc->lng),
+        );
     }
 }

@@ -2,11 +2,12 @@
 
 namespace Domain\Driver\Services;
 
-use Domain\Driver\Actions\GetAvailableDriversAction;
+use Domain\Driver\Actions\GetAvailableDriversNearbyAction;
 use Domain\Driver\Actions\GetDriversAction;
 use Domain\Driver\Actions\MarkDriverAvailableAction;
 use Domain\Driver\Actions\MarkDriverUnavailableAction;
 use Domain\Driver\Actions\UpdateDriverLocationAction;
+use Domain\Driver\Contracts\DriverLocationStoreContract;
 use Domain\Driver\Contracts\DriverServiceContract;
 use Domain\Driver\DataTransferObjects\DriverLocationData;
 use Domain\Driver\Exceptions\DriverNotFoundException;
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class DriverService implements DriverServiceContract
 {
+    public function __construct(private readonly DriverLocationStoreContract $locationStore) {}
+
     public function findOrFail(int $id): Driver
     {
         return Driver::find($id) ?? throw new DriverNotFoundException($id);
@@ -26,9 +29,9 @@ class DriverService implements DriverServiceContract
         return (new GetDriversAction($perPage))->handle();
     }
 
-    public function getAvailableDrivers(): Collection
+    public function getAvailableDriversNearby(float $lat, float $lng, float $radiusKm): Collection
     {
-        return (new GetAvailableDriversAction)->handle();
+        return (new GetAvailableDriversNearbyAction($this->locationStore, $lat, $lng, $radiusKm))->handle();
     }
 
     public function updateLocation(int $driverId, DriverLocationData $data): void

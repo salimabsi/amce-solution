@@ -22,13 +22,19 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Available drivers with vehicles and locations
+        // Available drivers — no active orders
         $availableDrivers = Driver::factory(8)
             ->withLocation()
             ->create();
 
-        // Unavailable drivers (already serving)
-        Driver::factory(3)
+        // One driver per assigned order — each is unavailable
+        $assignedDrivers = Driver::factory(16)
+            ->unavailable()
+            ->withLocation()
+            ->create();
+
+        // One driver per being-served order — each is unavailable
+        $beingServedDrivers = Driver::factory(15)
             ->unavailable()
             ->withLocation()
             ->create();
@@ -36,19 +42,19 @@ class DatabaseSeeder extends Seeder
         // Pending orders — visible on the operations team page
         Order::factory(22)->pending()->create();
 
-        // Orders assigned to available drivers
+        // One assigned order per driver (enforced by DB unique partial index)
         Order::factory(16)
             ->assigned()
-            ->recycle($availableDrivers)
+            ->sequence(fn ($seq) => ['driver_id' => $assignedDrivers[$seq->index]->id])
             ->create();
 
-        // Orders in service
+        // One being-served order per driver
         Order::factory(15)
             ->beingServed()
-            ->recycle($availableDrivers)
+            ->sequence(fn ($seq) => ['driver_id' => $beingServedDrivers[$seq->index]->id])
             ->create();
 
-        // Historical orders
+        // Historical orders — can share drivers freely
         Order::factory(20)->completed()->recycle($availableDrivers)->create();
         Order::factory(13)->cancelled()->create();
     }

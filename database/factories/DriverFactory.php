@@ -33,8 +33,8 @@ class DriverFactory extends Factory
     {
         return $this->afterCreating(function (Driver $driver) {
             $driver->location()->create([
-                'lat' => fake()->latitude(24.0, 25.5),
-                'lng' => fake()->longitude(46.0, 47.5),
+                'lat' => fake()->latitude(24.55, 24.85),
+                'lng' => fake()->longitude(46.55, 46.85),
             ]);
         });
     }

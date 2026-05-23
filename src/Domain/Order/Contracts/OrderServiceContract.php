@@ -19,4 +19,10 @@ interface OrderServiceContract
      * Throws OrderAlreadyAssignedException if the order is no longer pending.
      */
     public function markAsAssigned(int $orderId, int $driverId): Order;
+
+    /**
+     * Runs the full filter → score pipeline and assigns the best available driver.
+     * Throws NoAvailableDriverException if no driver passes the filters.
+     */
+    public function assignOrder(int $orderId): Order;
 }

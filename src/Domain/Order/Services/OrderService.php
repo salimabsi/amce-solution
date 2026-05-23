@@ -2,6 +2,13 @@
 
 namespace Domain\Order\Services;
 
+use Domain\Driver\Contracts\DriverServiceContract;
+use Domain\Order\Actions\Assignment\Filters\GeoDistanceFilter;
+use Domain\Order\Actions\Assignment\Filters\VehicleCapacityFilter;
+use Domain\Order\Actions\Assignment\Filters\VehicleTypeFilter;
+use Domain\Order\Actions\Assignment\Scorers\DistanceScorer;
+use Domain\Order\Actions\Assignment\Scorers\VehicleCapacityFitScorer;
+use Domain\Order\Actions\AssignOrderAction;
 use Domain\Order\Actions\GetDriverOrdersAction;
 use Domain\Order\Actions\GetPendingOrdersAction;
 use Domain\Order\Actions\MarkOrderAsAssignedAction;
@@ -13,6 +20,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderService implements OrderServiceContract
 {
+    public function __construct(private readonly DriverServiceContract $driverService) {}
+
     public function findOrFail(int $id): Order
     {
         return Order::find($id) ?? throw new OrderNotFoundException($id);
@@ -31,5 +40,22 @@ class OrderService implements OrderServiceContract
     public function markAsAssigned(int $orderId, int $driverId): Order
     {
         return (new MarkOrderAsAssignedAction($orderId, $driverId))->handle();
+    }
+
+    public function assignOrder(int $orderId): Order
+    {
+        return (new AssignOrderAction(
+            orderId: $orderId,
+            driverService: $this->driverService,
+            filters: [
+                new GeoDistanceFilter,
+                new VehicleTypeFilter,
+                new VehicleCapacityFilter,
+            ],
+            scorers: [
+                new DistanceScorer,
+                new VehicleCapacityFitScorer,
+            ],
+        ))->handle();
     }
 }

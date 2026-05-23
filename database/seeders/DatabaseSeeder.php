@@ -6,6 +6,8 @@ use App\Models\User;
 use Domain\Driver\Contracts\DriverLocationStoreContract;
 use Domain\Driver\Models\Entities\Driver;
 use Domain\Driver\Models\Entities\DriverLocation;
+use Domain\Order\Contracts\PendingOrderStoreContract;
+use Domain\Order\Enums\OrderStatus;
 use Domain\Order\Models\Entities\Order;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -61,10 +63,15 @@ class DatabaseSeeder extends Seeder
         Order::factory(13)->cancelled()->create();
 
         // WithoutModelEvents disables observers during seeding, so mirror
-        // driver locations to Redis explicitly to keep the GEO set in sync.
-        $store = app(DriverLocationStoreContract::class);
+        // driver locations and pending orders to Redis explicitly.
+        $locationStore = app(DriverLocationStoreContract::class);
         DriverLocation::query()->each(
-            fn (DriverLocation $loc) => $store->set($loc->driver_id, (float) $loc->lat, (float) $loc->lng),
+            fn (DriverLocation $loc) => $locationStore->set($loc->driver_id, (float) $loc->lat, (float) $loc->lng),
+        );
+
+        $pendingStore = app(PendingOrderStoreContract::class);
+        Order::where('status', OrderStatus::Pending)->each(
+            fn (Order $o) => $pendingStore->add($o->id, $o->created_at->timestamp),
         );
     }
 }

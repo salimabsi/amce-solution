@@ -16,18 +16,21 @@ class MarkOrderAsAssignedAction extends Action
 
     public function handle(): Order
     {
-        $affected = Order::where('id', $this->orderId)
+        $order = Order::where('id', $this->orderId)
             ->where('status', OrderStatus::Pending)
-            ->update([
-                'status' => OrderStatus::Assigned,
-                'driver_id' => $this->driverId,
-                'assigned_at' => now(),
-            ]);
+            ->lockForUpdate()
+            ->first();
 
-        if ($affected === 0) {
+        if (! $order) {
             throw new OrderAlreadyAssignedException($this->orderId);
         }
 
-        return Order::findOrFail($this->orderId);
+        $order->update([
+            'status' => OrderStatus::Assigned,
+            'driver_id' => $this->driverId,
+            'assigned_at' => now(),
+        ]);
+
+        return $order->fresh();
     }
 }

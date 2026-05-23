@@ -12,6 +12,7 @@ use Domain\Order\Actions\GetDriverOrdersAction;
 use Domain\Order\Actions\GetPendingOrdersAction;
 use Domain\Order\Actions\MarkOrderAsAssignedAction;
 use Domain\Order\Contracts\OrderServiceContract;
+use Domain\Order\Contracts\PendingOrderStoreContract;
 use Domain\Order\DataTransferObjects\OrderFilterData;
 use Domain\Order\Exceptions\OrderNotFoundException;
 use Domain\Order\Models\Entities\Order;
@@ -19,7 +20,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderService implements OrderServiceContract
 {
-    public function __construct(private readonly DriverServiceContract $driverService) {}
+    public function __construct(
+        private readonly DriverServiceContract $driverService,
+        private readonly PendingOrderStoreContract $pendingOrderStore,
+    ) {}
 
     public function findOrFail(int $id): Order
     {
@@ -28,7 +32,7 @@ class OrderService implements OrderServiceContract
 
     public function getPendingOrders(int $perPage = 15): LengthAwarePaginator
     {
-        return (new GetPendingOrdersAction($perPage))->handle();
+        return (new GetPendingOrdersAction($this->pendingOrderStore, $perPage))->handle();
     }
 
     public function getDriverOrders(int $driverId, OrderFilterData $filters): LengthAwarePaginator

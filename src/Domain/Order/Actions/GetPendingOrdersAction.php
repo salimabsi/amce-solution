@@ -2,19 +2,32 @@
 
 namespace Domain\Order\Actions;
 
-use Domain\Order\Enums\OrderStatus;
+use Domain\Order\Contracts\PendingOrderStoreContract;
 use Domain\Order\Models\Entities\Order;
 use Domain\Shared\Actions\Action;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator as Paginator;
+use Illuminate\Pagination\Paginator as PaginatorFacade;
 
 class GetPendingOrdersAction extends Action
 {
-    public function __construct(private readonly int $perPage = 15) {}
+    public function __construct(
+        private readonly PendingOrderStoreContract $store,
+        private readonly int $perPage = 15,
+    ) {}
 
     public function handle(): LengthAwarePaginator
     {
-        return Order::where('status', OrderStatus::Pending)
-            ->orderBy('created_at')
-            ->paginate($this->perPage);
+        $page = PaginatorFacade::resolveCurrentPage();
+        $total = $this->store->count();
+        $ids = $this->store->paginateIds($page, $this->perPage);
+
+        $orders = empty($ids)
+            ? collect()
+            : Order::whereIn('id', $ids)->get()->sortBy(fn ($o) => array_search($o->id, $ids))->values();
+
+        return new Paginator($orders, $total, $this->perPage, $page, [
+            'path' => PaginatorFacade::resolveCurrentPath(),
+        ]);
     }
 }

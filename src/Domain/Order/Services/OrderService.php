@@ -11,11 +11,15 @@ use Domain\Order\Actions\AssignOrderAction;
 use Domain\Order\Actions\GetDriverOrdersAction;
 use Domain\Order\Actions\GetPendingOrdersAction;
 use Domain\Order\Actions\MarkOrderAsAssignedAction;
+use Domain\Order\Actions\ProcessUnprocessedOrdersAction;
+use Domain\Order\Actions\QueueOrderForProcessingAction;
 use Domain\Order\Contracts\OrderServiceContract;
 use Domain\Order\Contracts\PendingOrderStoreContract;
+use Domain\Order\DataTransferObjects\CreateOrderData;
 use Domain\Order\DataTransferObjects\OrderFilterData;
 use Domain\Order\Exceptions\OrderNotFoundException;
 use Domain\Order\Models\Entities\Order;
+use Domain\Order\Models\Entities\UnprocessedOrder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderService implements OrderServiceContract
@@ -38,6 +42,16 @@ class OrderService implements OrderServiceContract
     public function getDriverOrders(int $driverId, OrderFilterData $filters): LengthAwarePaginator
     {
         return (new GetDriverOrdersAction($driverId, $filters))->handle();
+    }
+
+    public function queueForProcessing(CreateOrderData $data): UnprocessedOrder
+    {
+        return (new QueueOrderForProcessingAction($data))->handle();
+    }
+
+    public function processUnprocessedBatch(int $batchSize = 500): int
+    {
+        return (new ProcessUnprocessedOrdersAction($this->pendingOrderStore, $batchSize))->handle();
     }
 
     public function markAsAssigned(int $orderId, int $driverId): Order

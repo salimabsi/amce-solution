@@ -9,6 +9,7 @@ use Domain\Order\Enums\OrderStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Presentation\Api\Requests\DriverOrdersRequest;
+use Presentation\Api\Resources\DriverResource;
 use Presentation\Api\Resources\OrderResource;
 
 class DriverController
@@ -17,6 +18,11 @@ class DriverController
         private readonly DriverServiceContract $driverService,
         private readonly OrderServiceContract $orderService,
     ) {}
+
+    public function index(): AnonymousResourceCollection
+    {
+        return DriverResource::collection($this->driverService->getDrivers());
+    }
 
     public function orders(DriverOrdersRequest $request, int $id): AnonymousResourceCollection|JsonResponse
     {
